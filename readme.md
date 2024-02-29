@@ -1,3 +1,7 @@
+# FastAPI + SQL Template from 02.2024
+
+[![Build Status](https://github.com/vvandriichuk/fastapi_db_template_02_2024/actions/workflows/checks.yml/badge.svg?branch=main)](https://github.com/vvandriichuk/fastapi_db_template_02_2024/actions/workflows/checks.yml)
+
 This my current vision of the FastAPI structure.
 
 Short description of this structure and changes:
