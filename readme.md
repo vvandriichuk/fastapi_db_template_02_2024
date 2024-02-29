@@ -2,11 +2,17 @@ This my current vision of the FastAPI structure.
 
 Short description of this structure and changes:
 
+v.2.1.0 - Additional checker:
+-
+- Added mypy checker
+- Added actions for GitHub
+
 v.2.0.0 - Unit of Work:
+-
 - Added transaction manager to handle the database transactions
 
 v.1.0.0 - Onion Architecture:
-
+-
 - Take beyond the logic from the API endpoints and put it in the middle layer
 - Added SQLAlchemy models and linked them with Pydantic schemas through to_read_model
 - Changed orm_mode for schemas class Config to from_attributes (for Pydantic v2)
@@ -34,25 +40,31 @@ alembic revision --autogenerate -m "description_of_changes"
 alembic upgrade head
 ```
 
-3. For running check of the code, run:
+3. For running check of the code with Ruff, run:
 
 ```
 ruff check app
 ```
 
-4. For running the formatting of the code, run:
+4. For running the formatting of the code with the Ruff, run:
 
 ```
 ruff format app
 ```
 
-5. Before running the project in docker create docker network:
+5. For checking the code with Mypy, run:
+
+```
+poetry run mypy app/
+```
+
+6. Before running the project in docker create docker network:
 
 ```
 docker network create test-fastapi-sql-network
 ```
-6. Run the project in docker:
+7. Run the project in docker:
 
 ```
-docker-compose up
+docker-compose up --build
 ```

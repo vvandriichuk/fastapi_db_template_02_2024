@@ -16,6 +16,7 @@ aioboto3 = "^12.3.0"
 greenlet = "^3.0.3"
 ruff = "^0.2.2"
 pyjwt = "^2.8.0"
+mypy = "^1.8.0"
 
 
 [build-system]

@@ -1,10 +1,18 @@
 from abc import ABC, abstractmethod
+from typing import Type
 
-from sqlalchemy import insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import insert, select, update
+
+from db.db import Base
 
 
 class AbstractRepository(ABC):
+    @property
+    @abstractmethod
+    def model(self) -> Type[Base]:
+        pass
+
     @abstractmethod
     async def add_one(self, data: dict):
         raise NotImplementedError
@@ -23,7 +31,9 @@ class AbstractRepository(ABC):
 
 
 class SQLAlchemyRepository(AbstractRepository):
-    model = None
+    @property
+    def model(self) -> Type[Base]:
+        raise NotImplementedError("Model must be defined by SQLAlchemyRepository subclasses")
 
     def __init__(self, session: AsyncSession):
         self.session = session
