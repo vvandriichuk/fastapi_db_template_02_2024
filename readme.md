@@ -63,14 +63,13 @@ ruff format app
 5. For checking the code with Mypy, run:
 
 ```
-poetry run mypy app/
+mypy app
 ```
 
 6. For running pytest, use commands from directory:
 
 ```
-cd app
-poetry run pytest . -v
+pytest app/tests -v
 ```
 
 7. For running this project locally from root dir, run (you can use any port that you want):
