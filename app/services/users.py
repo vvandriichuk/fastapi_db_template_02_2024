@@ -1,5 +1,5 @@
-from schemas.users import UserSchemaAdd
-from utils.unitofwork import IUnitOfWork
+from app.schemas.users import UserSchemaAdd
+from app.utils.unitofwork import IUnitOfWork
 
 
 class UsersService:

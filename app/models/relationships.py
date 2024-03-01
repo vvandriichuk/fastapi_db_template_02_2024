@@ -1,6 +1,6 @@
 from sqlalchemy.orm import relationship
-from models.tasks import Tasks
-from models.users import Users
+from app.models.tasks import Tasks
+from app.models.users import Users
 
 Users.tasks = relationship(
     "Tasks", back_populates="author", foreign_keys=[Tasks.author_id]

@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 
-from api.v1.dependencies import UOWDep, CurrentUser
-from schemas.users import UserSchemaAdd
-from services.users import UsersService
+from app.api.v1.dependencies import UOWDep, CurrentUser
+from app.schemas.users import UserSchemaAdd
+from app.services.users import UsersService
 
 router = APIRouter(
     prefix="/api/v1/users",

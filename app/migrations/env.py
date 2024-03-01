@@ -8,9 +8,9 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 
-from db.db import Base
-from models.users import Users
-from models.tasks import Tasks
+from app.db.db import Base
+from app.models.users import Users
+from app.models.tasks import Tasks
 
 
 # this is the Alembic Config object, which provides

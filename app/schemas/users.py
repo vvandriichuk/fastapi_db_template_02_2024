@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 
-from schemas.tasks import TaskSchema
+from app.schemas.tasks import TaskSchema
 
 
 class UserSchema(BaseModel):

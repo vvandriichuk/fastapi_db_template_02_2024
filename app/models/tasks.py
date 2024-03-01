@@ -1,8 +1,8 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from db.db import Base
-from schemas.tasks import TaskSchema
+from app.db.db import Base
+from app.schemas.tasks import TaskSchema
 
 
 class Tasks(Base):

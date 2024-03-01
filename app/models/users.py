@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from db.db import Base
-from schemas.users import UserSchema
+from app.db.db import Base
+from app.schemas.users import UserSchema
 
 
 class Users(Base):

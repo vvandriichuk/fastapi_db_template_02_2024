@@ -1,8 +1,8 @@
 from typing import Type
 
-from db.db import Base
-from models.tasks import Tasks
-from utils.repository import SQLAlchemyRepository
+from app.db.db import Base
+from app.models.tasks import Tasks
+from app.utils.repository import SQLAlchemyRepository
 
 
 class TasksRepository(SQLAlchemyRepository):

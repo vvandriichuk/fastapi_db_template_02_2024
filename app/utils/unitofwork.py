@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 
-from db.db import async_session_maker
-from repositories.tasks import TasksRepository
-from repositories.users import UsersRepository
+from app.db.db import async_session_maker
+from app.repositories.tasks import TasksRepository
+from app.repositories.users import UsersRepository
 
 
 class IUnitOfWork(ABC):

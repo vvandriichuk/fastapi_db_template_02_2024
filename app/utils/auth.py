@@ -4,7 +4,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 import jwt
 
 
-APP_SECRET_KEY = os.environ.get('APP_ACCESS_KEY')
+APP_SECRET_KEY = os.environ.get('APP_ACCESS_KEY', 'AKIAJ2527Z33Q572726A')
 JWT_ALGORITHM = os.environ.get('JWT_ALGORITHM', 'HS256')
 
 

@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI, HTTPException
 
-from api.v1.routers import all_routers
+from app.api.v1.routers import all_routers
 
 app = FastAPI(title="Basic Template for Fast API + DB")
 
@@ -25,7 +25,3 @@ async def ping():
     Return a 200 for /ping.
     """
     return {"pong": "pong"}
-
-
-if __name__ == "__main__":
-    uvicorn.run(app="main:app", reload=True)

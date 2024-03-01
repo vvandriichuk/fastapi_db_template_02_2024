@@ -1,5 +1,5 @@
-from schemas.tasks import TaskSchemaAdd, TaskSchemaEdit
-from utils.unitofwork import IUnitOfWork
+from app.schemas.tasks import TaskSchemaAdd, TaskSchemaEdit
+from app.utils.unitofwork import IUnitOfWork
 
 
 class TasksService:

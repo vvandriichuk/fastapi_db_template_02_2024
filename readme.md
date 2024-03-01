@@ -2,20 +2,24 @@
 
 [![Build Status](https://github.com/vvandriichuk/fastapi_db_template_02_2024/actions/workflows/checks.yml/badge.svg?branch=main)](https://github.com/vvandriichuk/fastapi_db_template_02_2024/actions/workflows/checks.yml)
 
-This my current vision of the FastAPI structure.
+This my current vision of the good FastAPI structure.
 
 Short description of this structure and changes:
 
-v.2.1.0 - Additional checker:
+v.2.2.0 (from 29.02.2024) - Unit tests:
+-
+-  Using TDD methodology added unit tests for all endpoints
+
+v.2.1.0 (from 29.02.2024) - Additional checker and GitHub actions:
 -
 - Added mypy checker
 - Added actions for GitHub
 
-v.2.0.0 - Unit of Work:
+v.2.0.0 (from 21.02.2024) - Unit of Work:
 -
 - Added transaction manager to handle the database transactions
 
-v.1.0.0 - Onion Architecture:
+v.1.0.0 (from 15.02.2024) - Onion Architecture:
 -
 - Take beyond the logic from the API endpoints and put it in the middle layer
 - Added SQLAlchemy models and linked them with Pydantic schemas through to_read_model
@@ -62,13 +66,26 @@ ruff format app
 poetry run mypy app/
 ```
 
-6. Before running the project in docker create docker network:
+6. For running pytest, use commands from directory:
+
+```
+cd app
+poetry run pytest . -v
+```
+
+7. For running this project locally from root dir, run (you can use any port that you want):
+```
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8001
+```
+
+8. Before running the project in docker create docker network:
 
 ```
 docker network create test-fastapi-sql-network
 ```
-7. Run the project in docker:
+9. Run the project in docker:
 
 ```
 docker-compose up --build
 ```
+

@@ -2,9 +2,9 @@ from typing import Type
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
-from db.db import Base
-from models.users import Users
-from utils.repository import SQLAlchemyRepository
+from app.db.db import Base
+from app.models.users import Users
+from app.utils.repository import SQLAlchemyRepository
 
 
 class UsersRepository(SQLAlchemyRepository):

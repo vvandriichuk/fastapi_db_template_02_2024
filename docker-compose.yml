@@ -7,8 +7,6 @@ services:
     environment:
       - APP_ACCESS_KEY=${APP_ACCESS_KEY}
       - JWT_ALGORITHM=${JWT_ALGORITHM}
-    volumes:
-      - ./app:/app
     networks:
       - test-fastapi-sql-network
 

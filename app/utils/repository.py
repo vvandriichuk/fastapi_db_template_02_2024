@@ -4,7 +4,7 @@ from typing import Type
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import insert, select, update
 
-from db.db import Base
+from app.db.db import Base
 
 
 class AbstractRepository(ABC):
