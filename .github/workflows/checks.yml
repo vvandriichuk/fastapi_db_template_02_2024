@@ -32,5 +32,4 @@ jobs:
         run: mypy app/
 
       - name: Run tests
-        run: |
-          pytest app -v
+        run: pytest app -v
