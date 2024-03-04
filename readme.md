@@ -72,6 +72,12 @@ mypy app
 pytest app/tests -v
 ```
 
+7. Loading testing, use:
+```
+locust -f app/tests/locust/users.py --host http://localhost:8001
+
+```
+
 7. For running this project locally from root dir, run (you can use any port that you want):
 ```
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8001
