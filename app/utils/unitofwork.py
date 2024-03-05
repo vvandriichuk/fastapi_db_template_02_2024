@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from opentelemetry import trace
 
 from app.db.db import async_session_maker
 from app.repositories.tasks import TasksRepository
@@ -33,19 +34,27 @@ class IUnitOfWork(ABC):
 class UnitOfWork:
     def __init__(self):
         self.session_factory = async_session_maker
+        self.tracer = trace.get_tracer(__name__)
 
     async def __aenter__(self):
-        self.session = self.session_factory()
+        with self.tracer.start_as_current_span("UnitOfWork: Start"):
+            self.session = self.session_factory()
 
-        self.users = UsersRepository(self.session)
-        self.tasks = TasksRepository(self.session)
+            self.users = UsersRepository(self.session)
+            self.tasks = TasksRepository(self.session)
 
-    async def __aexit__(self, *args):
-        await self.rollback()
-        await self.session.close()
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        with self.tracer.start_as_current_span("UnitOfWork: Exit"):
+            if exc_type:
+                await self.rollback()
+            else:
+                await self.commit()
+            await self.session.close()
 
     async def commit(self):
-        await self.session.commit()
+        with self.tracer.start_as_current_span("UnitOfWork: Commit"):
+            await self.session.commit()
 
     async def rollback(self):
-        await self.session.rollback()
+        with self.tracer.start_as_current_span("UnitOfWork: Rollback"):
+            await self.session.rollback()

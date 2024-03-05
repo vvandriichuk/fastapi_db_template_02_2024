@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Type
+from opentelemetry import trace
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import insert, select, update
@@ -39,25 +40,33 @@ class SQLAlchemyRepository(AbstractRepository):
         self.session = session
 
     async def add_one(self, data: dict) -> int:
-        stmt = insert(self.model).values(**data).returning(self.model.id)
-        res = await self.session.execute(stmt)
-        return res.scalar_one()
+        tracer = trace.get_tracer(__name__)
+        with tracer.start_as_current_span("UsersRepository: add_one"):
+            stmt = insert(self.model).values(**data).returning(self.model.id)
+            res = await self.session.execute(stmt)
+            return res.scalar_one()
 
     async def edit_one(self, id: int, data: dict) -> int:
-        stmt = (
-            update(self.model).values(**data).filter_by(id=id).returning(self.model.id)
-        )
-        res = await self.session.execute(stmt)
-        return res.scalar_one()
+        tracer = trace.get_tracer(__name__)
+        with tracer.start_as_current_span("UsersRepository: edit_one"):
+            stmt = (
+                update(self.model).values(**data).filter_by(id=id).returning(self.model.id)
+            )
+            res = await self.session.execute(stmt)
+            return res.scalar_one()
 
     async def find_all(self):
-        stmt = select(self.model)
-        res = await self.session.execute(stmt)
-        res = [row[0].to_read_model() for row in res.all()]
-        return res
+        tracer = trace.get_tracer(__name__)
+        with tracer.start_as_current_span("UsersRepository: find_all"):
+            stmt = select(self.model)
+            res = await self.session.execute(stmt)
+            res = [row[0].to_read_model() for row in res.all()]
+            return res
 
     async def find_one(self, **filter_by):
-        stmt = select(self.model).filter_by(**filter_by)
-        res = await self.session.execute(stmt)
-        res = res.scalar_one().to_read_model()
-        return res
+        tracer = trace.get_tracer(__name__)
+        with tracer.start_as_current_span("UsersRepository: find_one"):
+            stmt = select(self.model).filter_by(**filter_by)
+            res = await self.session.execute(stmt)
+            res = res.scalar_one().to_read_model()
+            return res

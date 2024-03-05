@@ -3,10 +3,12 @@ services:
   fastapi-app:
     build: .
     ports:
-      - "8001:8001"
+      - "8002:8002"
     environment:
       - APP_ACCESS_KEY=${APP_ACCESS_KEY}
       - JWT_ALGORITHM=${JWT_ALGORITHM}
+      - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT}
+      - TRACE_ENABLED=${TRACE_ENABLED}
     networks:
       - test-fastapi-sql-network
 

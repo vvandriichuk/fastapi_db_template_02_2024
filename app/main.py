@@ -1,9 +1,20 @@
 import uvicorn
 from fastapi import FastAPI, HTTPException
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
+from opentelemetry.instrumentation.sqlite3 import SQLite3Instrumentor
 
 from app.api.v1.routers import all_routers
+from app.config.tracer_setup import setup_tracing
+
 
 app = FastAPI(title="Basic Template for Fast API + DB")
+
+setup_tracing()
+FastAPIInstrumentor.instrument_app(app)
+SQLAlchemyInstrumentor().instrument()
+SQLite3Instrumentor().instrument()
+
 
 for router in all_routers:
     app.include_router(router)
@@ -25,3 +36,7 @@ async def ping():
     Return a 200 for /ping.
     """
     return {"pong": "pong"}
+
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8002, reload=True)
