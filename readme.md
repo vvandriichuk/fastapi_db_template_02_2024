@@ -6,6 +6,10 @@ This my current vision of the good FastAPI structure.
 
 Short description of this structure and changes:
 
+v.2.3.0 (from 06.03.2024) - Logger:
+-
+-  Added logger' and tracer' managers
+
 v.2.2.0 (from 29.02.2024) - Locust Tests:
 -
 -  Added locust tests
