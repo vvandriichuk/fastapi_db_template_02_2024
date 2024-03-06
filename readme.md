@@ -6,13 +6,13 @@ This my current vision of the good FastAPI structure.
 
 Short description of this structure and changes:
 
-v.2.2.0 (from 29.02.2024) - Unit tests:
+v.2.2.0 (from 29.02.2024) - Locust Tests:
 -
--  Using TDD methodology added unit tests for all endpoints
+-  Added locust tests
 
 v.2.1.0 (from 29.02.2024) - Additional checker and GitHub actions:
 -
-- Added mypy checker
+- Added mypy, ruff checkers
 - Added actions for GitHub
 
 v.2.0.0 (from 21.02.2024) - Unit of Work:
