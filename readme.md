@@ -94,3 +94,5 @@ docker network create test-fastapi-sql-network
 docker-compose up --build
 ```
 
+10. If you want to work with collected data locally, use TRACE_INSECURE=True and TRACE_USE_CREDENTIALS=False. If you want to use external Aspecto service, use TRACE_INSECURE=False and TRACE_USE_CREDENTIALS=True
+
