@@ -5,6 +5,7 @@ from opentelemetry import trace
 from app.api.v1.dependencies import UOWDep, CurrentUser
 from app.schemas.tasks import TaskSchemaAdd, TaskSchemaEdit
 from app.services.tasks import TasksService
+from app.config.logger_setup import logger
 
 router = APIRouter(
     prefix="/api/v1/tasks",
@@ -19,6 +20,7 @@ async def get_tasks(
 ):
     tracer = trace.get_tracer(__name__)
     with tracer.start_as_current_span("Get Tasks Endpoint"):
+        logger.info("Run get_tasks logger")
         tasks = await TasksService().get_tasks(uow)
         return tasks
 

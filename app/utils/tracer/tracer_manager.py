@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Optional
 
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
@@ -6,7 +6,7 @@ from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExport
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.sdk.resources import SERVICE_NAME, Resource
 
-from app.utils.tracer.check_otlp_credentials import CertificateCredentialStrategy, TokenCredentialStrategy, CredentialStrategy
+from app.utils.check_otlp_credentials import CertificateCredentialStrategy, TokenCredentialStrategy, CredentialStrategy
 
 
 class TraceManager:
@@ -23,7 +23,6 @@ class TraceManager:
         )
 
         if trace_enabled:
-            print(f'TraceManager trace_enabled')
             credentials = None
 
             if use_credentials:
