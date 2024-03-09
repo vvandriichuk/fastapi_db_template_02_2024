@@ -5,6 +5,7 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.sdk.resources import SERVICE_NAME, Resource
+from opentelemetry.sdk.trace.sampling import TraceIdRatioBased
 
 from app.utils.check_otlp_credentials import CertificateCredentialStrategy, TokenCredentialStrategy, CredentialStrategy
 
@@ -17,9 +18,11 @@ class TraceManager:
                  use_credentials: bool = False,
                  use_ssl_certificate: bool = False,
                  ssl_certificate_path: Optional[str] = None,
-                 token: str = '') -> None:
+                 token: str = '',
+                 rate: float = 1/100) -> None:
         self.tracer_provider = TracerProvider(
-            resource=Resource.create({SERVICE_NAME: service_name})
+            resource=Resource.create({SERVICE_NAME: service_name}),
+            sampler=self._initialize_sampler(trace_enabled, rate)
         )
 
         if trace_enabled:
@@ -35,6 +38,8 @@ class TraceManager:
 
                 credentials = credential_strategy.get_credentials()
 
+            sampler = TraceIdRatioBased(rate)
+
             otlp_exporter = OTLPSpanExporter(
                 endpoint=endpoint,
                 insecure=insecure,
@@ -47,3 +52,9 @@ class TraceManager:
 
     def get_tracer(self, name):
         return trace.get_tracer(name)
+
+    def _initialize_sampler(self, trace_enabled: bool, rate: float):
+        if trace_enabled:
+            return TraceIdRatioBased(rate)
+        else:
+            return None

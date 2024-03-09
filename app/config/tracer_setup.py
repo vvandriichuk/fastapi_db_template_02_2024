@@ -13,6 +13,7 @@ def setup_tracing():
         use_ssl_certificate=False,
         ssl_certificate_path=None,
         token=os.environ.get('TRACE_TOKEN', ''),
+        rate=float(os.getenv('TRACE_SAMPLE_RATE', 1.0)),
     )
 
     return trace_manager

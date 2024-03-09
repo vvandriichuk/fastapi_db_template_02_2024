@@ -6,6 +6,10 @@ This my current vision of the good FastAPI structure.
 
 Short description of this structure and changes:
 
+v.2.3.2 (from 09.03.2024) - Tracer Sample Rate Control:
+-
+-  Added Tracer Sample Rate Control if we want to reduce the load on the server in a production environment
+
 v.2.3.1 (from 09.03.2024) - Loguru:
 -
 -  Added loguru as an option for logging and selector between loguru and standard logging
