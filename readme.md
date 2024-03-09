@@ -6,6 +6,10 @@ This my current vision of the good FastAPI structure.
 
 Short description of this structure and changes:
 
+v.2.3.1 (from 09.03.2024) - Loguru:
+-
+-  Added loguru as an option for logging and selector between loguru and standard logging
+
 v.2.3.0 (from 06.03.2024) - Logger:
 -
 -  Added logger' and tracer' managers

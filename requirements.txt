@@ -20,3 +20,4 @@ opentelemetry-instrumentation-redis==0.44b0
 opentelemetry-instrumentation-sqlalchemy==0.44b0
 opentelemetry-instrumentation-httpx==0.44b0
 opentelemetry-instrumentation-sqlite3==0.44b0
+loguru==0.7.2
