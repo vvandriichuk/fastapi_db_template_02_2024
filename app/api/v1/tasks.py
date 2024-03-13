@@ -22,10 +22,10 @@ async def get_tasks(
     tracer = trace.get_tracer(__name__)
     with tracer.start_as_current_span("Get Tasks Endpoint"):
         start_time = time.time()
-        logger.info("Run get_tasks logger")
+        # logger.error("Run get_tasks logger")
+        tasks = await TasksService().get_tasks(uow)
         elapsed_time = time.time() - start_time
         logger.info(f"Logger executed in {elapsed_time:.4f} seconds")
-        tasks = await TasksService().get_tasks(uow)
         return tasks
 
 

@@ -38,8 +38,6 @@ class TraceManager:
 
                 credentials = credential_strategy.get_credentials()
 
-            sampler = TraceIdRatioBased(rate)
-
             otlp_exporter = OTLPSpanExporter(
                 endpoint=endpoint,
                 insecure=insecure,

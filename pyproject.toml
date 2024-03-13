@@ -30,6 +30,7 @@ opentelemetry-instrumentation-sqlalchemy = "^0.44b0"
 opentelemetry-instrumentation-sqlite3 = "^0.44b0"
 opentelemetry-exporter-otlp = "^1.23.0"
 loguru = "^0.7.2"
+yarl = "^1.9.4"
 
 
 [build-system]

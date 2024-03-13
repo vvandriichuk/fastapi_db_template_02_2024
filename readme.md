@@ -6,6 +6,12 @@ This my current vision of the good FastAPI structure.
 
 Short description of this structure and changes:
 
+v.2.4.0 (from 13.03.2024) - Slack Integration:
+-
+-  Added Slack Integrations for notifications
+-  Some small changes in the code
+
+
 v.2.3.2 (from 09.03.2024) - Tracer Sample Rate Control:
 -
 -  Added Tracer Sample Rate Control if we want to reduce the load on the server in a production environment
