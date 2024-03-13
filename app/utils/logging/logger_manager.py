@@ -33,6 +33,7 @@ class LoggerManager:
     ssl_certificate_path = None
     token = LoggerConfigData.LOGGING_TOKEN()
     slack_notifications_enable = str_to_bool(LoggerConfigData.LOGGING_SLACK_ENABLE())
+    environment = LoggerConfigData.ENVIRONMENT()
 
     @classmethod
     def get_logger(cls):
@@ -77,7 +78,8 @@ class LoggerManager:
 
         # OTLP
         if cls.logging_otlp_enable is True:
-            resource = Resource.create({"service.name": cls.logging_name})
+            resource = Resource.create({"service.name": cls.logging_name,
+                                        "deployment.environment": cls.environment})
             logger_provider = LoggerProvider(resource=resource)
             set_logger_provider(logger_provider)
 

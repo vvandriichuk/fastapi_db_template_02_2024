@@ -17,3 +17,4 @@ class LoggerConfigData(AbstractCustomStrEnum):
     LOGGING_OTLP_USE_CREDENTIALS = os.environ.get('LOGGING_OTLP_USE_CREDENTIALS', 'False')
     LOGGING_TOKEN = os.environ.get('LOGGING_TOKEN', '')
     LOGGING_SLACK_ENABLE = os.environ.get('LOGGING_SLACK_ENABLE', 'False')
+    ENVIRONMENT = os.environ.get('ENVIRONMENT', '')

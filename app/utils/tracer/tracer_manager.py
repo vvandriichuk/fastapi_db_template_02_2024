@@ -19,9 +19,11 @@ class TraceManager:
                  use_ssl_certificate: bool = False,
                  ssl_certificate_path: Optional[str] = None,
                  token: str = '',
+                 environment: str = '',
                  rate: float = 1/100) -> None:
         self.tracer_provider = TracerProvider(
-            resource=Resource.create({SERVICE_NAME: service_name}),
+            resource=Resource.create({SERVICE_NAME: service_name,
+                                      "deployment.environment": environment}),
             sampler=self._initialize_sampler(trace_enabled, rate)
         )
 

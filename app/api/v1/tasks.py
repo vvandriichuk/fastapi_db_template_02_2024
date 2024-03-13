@@ -7,6 +7,7 @@ from app.api.v1.dependencies import UOWDep, CurrentUser
 from app.schemas.tasks import TaskSchemaAdd, TaskSchemaEdit
 from app.services.tasks import TasksService
 from app.config.logger_setup import logger
+from app.config.metrics_setup import mm
 
 router = APIRouter(
     prefix="/api/v1/tasks",
@@ -24,8 +25,14 @@ async def get_tasks(
         start_time = time.time()
         # logger.error("Run get_tasks logger")
         tasks = await TasksService().get_tasks(uow)
+
+        mm.counter_add("Counter", 22)
+        mm.updown_counter_add("UpDownCounter", 27)
+        mm.histogram_record("HistogramRecord", 29, "ms", "HistogramRecord finished time in milliseconds")
+
         elapsed_time = time.time() - start_time
         logger.info(f"Logger executed in {elapsed_time:.4f} seconds")
+
         return tasks
 
 

@@ -6,11 +6,15 @@ This my current vision of the good FastAPI structure.
 
 Short description of this structure and changes:
 
+v.2.5.0 (from 13.03.2024) - Metrics Collector:
+-
+-  Added Metrics Collector
+-  Some small changes in the code
+
 v.2.4.0 (from 13.03.2024) - Slack Integration:
 -
 -  Added Slack Integrations for notifications
 -  Some small changes in the code
-
 
 v.2.3.2 (from 09.03.2024) - Tracer Sample Rate Control:
 -
@@ -113,4 +117,23 @@ docker-compose up --build
 ```
 
 10. If you want to work with collected data locally, use TRACE_INSECURE=True and TRACE_USE_CREDENTIALS=False. If you want to use external Aspecto service, use TRACE_INSECURE=False and TRACE_USE_CREDENTIALS=True
+
+11. In Elasticseach please go to Dev Tools for finding count of metrics. For example
+
+```
+GET /_cat/indices?v
+
+
+GET /.ds-metrics-*/_mapping
+
+
+GET /.ds-metrics-*/_search
+{
+  "query": {
+    "exists": {
+      "field": "labels.Counter"
+    }
+  }
+}
+```
 
