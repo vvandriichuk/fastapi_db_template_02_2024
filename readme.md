@@ -6,27 +6,28 @@ This my current vision of the good FastAPI structure.
 
 Short description of this structure and changes:
 
-v.2.5.0 (from 13.03.2024) - Metrics Collector:
+v.2.5.0 (from 13.03.2024) - Metrics Collector for Open Telemetry:
 -
 -  Added Metrics Collector
 -  Some small changes in the code
 
-v.2.4.0 (from 13.03.2024) - Slack Integration:
+v.2.4.0 (from 13.03.2024) - Slack Integration to Logger:
 -
 -  Added Slack Integrations for notifications
 -  Some small changes in the code
 
-v.2.3.2 (from 09.03.2024) - Tracer Sample Rate Control:
+v.2.3.2 (from 09.03.2024) - Tracer Sample Rate Control for Open Telemetry:
 -
 -  Added Tracer Sample Rate Control if we want to reduce the load on the server in a production environment
 
-v.2.3.1 (from 09.03.2024) - Loguru:
+v.2.3.1 (from 09.03.2024) - Integrating Loguru and Open Telemetry:
 -
 -  Added loguru as an option for logging and selector between loguru and standard logging
 
-v.2.3.0 (from 06.03.2024) - Logger:
+v.2.3.0 (from 06.03.2024) - Logging and Tracer Manager and Open Telemetry:
 -
--  Added logger' and tracer' managers
+- Added Open Telemetry to project 
+- Added logger' and tracer' managers
 
 v.2.2.0 (from 29.02.2024) - Locust Tests:
 -
