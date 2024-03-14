@@ -15,6 +15,6 @@ app/tests/
 .mypy_cache
 .pytest_cache
 .ruff_cache
-docker-compose-run.yml
-Dockerfile-run
+!docker-compose-run.yml
+!Dockerfile-run
 .dockerignore
