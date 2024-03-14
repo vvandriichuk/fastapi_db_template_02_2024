@@ -17,7 +17,7 @@ inputs:
     default: ""
 runs:
   using: "node16"
-  main: "ai-copilot-code-reviewer/index.js"
+  main: "dist/index.js"
 branding:
   icon: "aperture"
   color: "green"
