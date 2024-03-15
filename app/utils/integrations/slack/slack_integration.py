@@ -6,25 +6,30 @@ import logging
 
 import httpx
 
-from app.config.slack_config import SlackAPIData
+from app.schemas.slack_manager import SlackConfigData
 from app.utils.get_url_endpoint import get_url
 
 
 class SlackLogHandler(logging.Handler):
+    def __init__(self):
+        super().__init__()
+        config = SlackConfigData()
+        self.slack_connector = SlackConnector(config)
+
     def emit(self, record):
         try:
             message = self.format(record)
-            from app.config.logger_setup import logger
-            asyncio.create_task(slack_connector.send_message(message))
+            asyncio.create_task(self.slack_connector.send_message(message))
         except Exception:
             self.handleError(record)
 
 
 class SlackConnector:
-    def __init__(self) -> None:
-        self._request_base_url = SlackAPIData.SLACK_API_URL()
-        self._service_name = SlackAPIData.FILES_UPLOAD()
-        self._channel_id = SlackAPIData.LOG_CHANNEL_ID()
+    def __init__(self, config: SlackConfigData) -> None:
+        config = config
+        self._request_base_url = config.SLACK_API_URL
+        self._service_name = config.FILES_UPLOAD
+        self._channel_id = config.LOG_CHANNEL_ID
         self._token = os.environ.get("SLACK_API_BOT_DEV_INFORMER_TOKEN", "")
         self._app_name = os.environ.get("SLACK_APP_NAME", "")
         self._app_type = os.environ.get("SLACK_APP_TYPE", "")
@@ -62,7 +67,9 @@ class SlackConnector:
         async with httpx.AsyncClient() as client:
             for _ in range(3):
                 try:
-                    from app.config.logger_setup import logger
+                    from app.config.logger_setup import logger_manager
+                    logger = logger_manager.get_logger()
+
                     response = await client.post(service_url, json=data, headers=headers)
                     logger.info(f"data to Slack: {data}")
                     logger.info(f"response from Slack: {response.text}")
@@ -106,4 +113,4 @@ class SlackConnector:
                     break
 
 
-slack_connector = SlackConnector()
+slack_connector = SlackConnector

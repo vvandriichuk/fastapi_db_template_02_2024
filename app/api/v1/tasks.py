@@ -6,13 +6,15 @@ from opentelemetry import trace
 from app.api.v1.dependencies import UOWDep, CurrentUser
 from app.schemas.tasks import TaskSchemaAdd, TaskSchemaEdit
 from app.services.tasks import TasksService
-from app.config.logger_setup import logger
+from app.config.logger_setup import logger_manager
 from app.config.metrics_setup import mm
 
 router = APIRouter(
     prefix="/api/v1/tasks",
     tags=["Tasks"],
 )
+
+logger = logger_manager.get_logger()
 
 
 @router.get("")
@@ -23,16 +25,15 @@ async def get_tasks(
     tracer = trace.get_tracer(__name__)
     with tracer.start_as_current_span("Get Tasks Endpoint"):
         start_time = time.time()
-        # logger.error("Run get_tasks logger")
         tasks = await TasksService().get_tasks(uow)
 
-        mm.counter_add("Counter", 22)
-        mm.updown_counter_add("UpDownCounter", 27)
-        mm.histogram_record("HistogramRecord", 29, "ms", "HistogramRecord finished time in milliseconds")
+        mm.counter_add(22)
+        mm.updown_counter_add(27)
+        mm.histogram_record(29)
 
         elapsed_time = time.time() - start_time
         logger.info(f"Logger executed in {elapsed_time:.4f} seconds")
-
+        logger.error("Run get_tasks logger")
         return tasks
 
 
