@@ -1,4 +1,5 @@
 from typing import Union
+from pydantic import ValidationError
 from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
 from opentelemetry.metrics import get_meter_provider, set_meter_provider
 from opentelemetry.sdk.metrics import MeterProvider
@@ -16,9 +17,13 @@ from app.utils.check_otlp_credentials import (
 
 class MetricsManager:
     def __init__(self):
-        config = MetricsConfigData()
+        try:
+            config = MetricsConfigData()
+        except ValidationError as e:
+            raise SystemExit(e)
 
         self.metrics_enabled = str_to_bool(config.METRICS_ENABLE)
+
         if self.metrics_enabled:
             self.metrics_use_credentials = str_to_bool(config.METRICS_USE_CREDENTIALS)
             self.metrics_otlp_endpoint = config.METRICS_OTLP_ENDPOINT

@@ -1,8 +1,8 @@
 import asyncio
-import os
 import io
 import re
 import logging
+from pydantic import ValidationError
 
 import httpx
 
@@ -13,8 +13,7 @@ from app.utils.get_url_endpoint import get_url
 class SlackLogHandler(logging.Handler):
     def __init__(self):
         super().__init__()
-        config = SlackConfigData()
-        self.slack_connector = SlackConnector(config)
+        self.slack_connector = SlackConnector()
 
     def emit(self, record):
         try:
@@ -25,14 +24,18 @@ class SlackLogHandler(logging.Handler):
 
 
 class SlackConnector:
-    def __init__(self, config: SlackConfigData) -> None:
-        config = config
+    def __init__(self) -> None:
+        try:
+            config = SlackConfigData()  # type: ignore
+        except ValidationError as e:
+            raise SystemExit(e)
+
         self._request_base_url = config.SLACK_API_URL
         self._service_name = config.FILES_UPLOAD
-        self._channel_id = config.LOG_CHANNEL_ID
-        self._token = os.environ.get("SLACK_API_BOT_DEV_INFORMER_TOKEN", "")
-        self._app_name = os.environ.get("SLACK_APP_NAME", "")
-        self._app_type = os.environ.get("SLACK_APP_TYPE", "")
+        self._channel_id = config.SLACK_LOG_CHANNEL_ID
+        self._token = config.SLACK_API_BOT_DEV_INFORMER_TOKEN
+        self._app_name = config.SLACK_APP_NAME
+        self._app_type = config.SLACK_APP_TYPE
 
     def _generate_logger_filename_from_record(self, log_record: str) -> str:
         # log_record = 2023-10-09 23:15:05.916 | ERROR    | __main__:main:50 - This error message will be sent to Slack as a file
@@ -67,12 +70,7 @@ class SlackConnector:
         async with httpx.AsyncClient() as client:
             for _ in range(3):
                 try:
-                    from app.config.logger_setup import logger_manager
-                    logger = logger_manager.get_logger()
-
                     response = await client.post(service_url, json=data, headers=headers)
-                    logger.info(f"data to Slack: {data}")
-                    logger.info(f"response from Slack: {response.text}")
                     response.raise_for_status()
                 except BaseException:
                     await asyncio.sleep(1)
@@ -111,6 +109,3 @@ class SlackConnector:
                     await asyncio.sleep(1)
                 else:
                     break
-
-
-slack_connector = SlackConnector

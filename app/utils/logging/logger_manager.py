@@ -1,4 +1,5 @@
 import logging
+from pydantic import ValidationError
 import http.client as http_client
 
 from opentelemetry._logs import set_logger_provider
@@ -19,7 +20,11 @@ from app.utils.str_to_bool import str_to_bool
 
 class LoggerManager(BaseLoggerManager):
     def __init__(self):
-        config = LoggerConfigData()
+        try:
+            config = LoggerConfigData()
+        except ValidationError as e:
+            raise SystemExit(e)
+
         self.logging_name = config.LOGGING_NAME
         self.logging_level = config.LOGGING_LEVEL.upper()
         self.logging_http_client_enable = config.LOGGING_HTTP_CLIENT_ENABLE

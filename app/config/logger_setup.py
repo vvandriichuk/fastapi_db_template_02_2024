@@ -10,3 +10,4 @@ if os.environ.get('LOGGING_NAME', '') == 'loguru':
     logger_manager = LoguruManager()
 else:
     logger_manager = LoggerManager()
+
