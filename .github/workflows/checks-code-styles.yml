@@ -1,4 +1,4 @@
-name: Code checks
+name: Code styles checks
 
 on:
   push:
@@ -30,6 +30,3 @@ jobs:
 
       - name: Run MyPy
         run: mypy app/
-
-      - name: Run tests
-        run: pytest app
