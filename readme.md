@@ -1,6 +1,8 @@
 # FastAPI + SQL Template from 02.2024
 
-[![Build Status](https://github.com/vvandriichuk/fastapi_db_template_02_2024/actions/workflows/checks.yml/badge.svg?branch=main)](https://github.com/vvandriichuk/fastapi_db_template_02_2024/actions/workflows/checks.yml)
+[![Build Status](https://github.com/vvandriichuk/fastapi_db_template_02_2024/actions/workflows/checks-pytests.yml/badge.svg?branch=main)](https://github.com/vvandriichuk/fastapi_db_template_02_2024/actions/workflows/checks.yml)
+[![Build Status](https://github.com/vvandriichuk/fastapi_db_template_02_2024/actions/workflows/checks-code-styles.yml/badge.svg?branch=main)](https://github.com/vvandriichuk/fastapi_db_template_02_2024/actions/workflows/checks.yml)
+[![Build Status](https://github.com/vvandriichuk/fastapi_db_template_02_2024/actions/workflows/ai-code-reviewer.yml/badge.svg?branch=main)](https://github.com/vvandriichuk/fastapi_db_template_02_2024/actions/workflows/checks.yml)
 
 This my current vision of the good FastAPI structure.
 
