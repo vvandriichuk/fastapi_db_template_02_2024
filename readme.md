@@ -6,6 +6,11 @@ This my current vision of the good FastAPI structure.
 
 Short description of this structure and changes:
 
+v.2.5.1 (from 15.03.2024) - AI Assistent for Code Review:
+-
+-  Added AI Assistent for Code Review
+-  Separation check action to two - check code style and check pytest
+
 v.2.5.0 (from 13.03.2024) - Metrics Collector for Open Telemetry:
 -
 -  Added Metrics Collector
