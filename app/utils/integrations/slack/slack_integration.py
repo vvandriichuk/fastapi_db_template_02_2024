@@ -7,6 +7,7 @@ from pydantic import ValidationError
 import httpx
 
 from app.schemas.slack_manager import SlackConfigData
+from app.utils.custom_exceptions import ConfigValidationError
 from app.utils.get_url_endpoint import get_url
 
 
@@ -18,22 +19,26 @@ class SlackLogHandler(logging.Handler):
     def emit(self, record):
         try:
             message = self.format(record)
-            asyncio.create_task(self.slack_connector.send_message(message))
-        except Exception:
+            try:
+                asyncio.create_task(self.slack_connector.send_message(message))
+            except Exception as create_task_exception:
+                logging.error(f"Failed to create asyncio task for sending message: {create_task_exception}")
+        except Exception as emit_exception:
             self.handleError(record)
 
 
 class SlackConnector:
     def __init__(self) -> None:
         try:
-            config = SlackConfigData()  # type: ignore
+            config: SlackConfigData = SlackConfigData()
         except ValidationError as e:
-            raise SystemExit(e)
+            raise ConfigValidationError(f"Configuration validation failed: {e}")
 
         self._request_base_url = config.SLACK_API_URL
         self._service_name = config.SERVICE_NAME
         self._channel_id = config.SLACK_LOG_CHANNEL_ID
         self._token = config.SLACK_API_BOT_DEV_INFORMER_TOKEN
+        self.chat_post_message = config.CHAT_POST_MESSAGE
         self._app_name = config.SLACK_APP_NAME
         self._app_type = config.SLACK_APP_TYPE
 
@@ -57,7 +62,7 @@ class SlackConnector:
             return "Invalid_log_format.txt"
 
     async def send_message(self, message: str) -> None:
-        service_url = "https://slack.com/api/chat.postMessage"
+        service_url = f"{self._request_base_url}/{self.chat_post_message}"
         headers = {
             "Authorization": f"Bearer {self._token}",
             "Content-Type": "application/json",

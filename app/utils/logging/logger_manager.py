@@ -1,4 +1,5 @@
 import logging
+from logging import Logger
 from pydantic import ValidationError
 import http.client as http_client
 
@@ -13,9 +14,9 @@ from app.utils.check_otlp_credentials import (
     CredentialStrategy, TokenCredentialStrategy,
 )
 from app.utils.integrations.slack.slack_integration import SlackLogHandler
+from app.utils.custom_exceptions import ConfigValidationError
 from app.schemas.logger_manager import LoggerConfigData
 from app.utils.logging.abc_logger_manager import BaseLoggerManager
-from app.utils.str_to_bool import str_to_bool
 
 
 class LoggerManager(BaseLoggerManager):
@@ -23,29 +24,29 @@ class LoggerManager(BaseLoggerManager):
         try:
             config = LoggerConfigData()
         except ValidationError as e:
-            raise SystemExit(e)
+            raise ConfigValidationError(f"Configuration validation failed: {e}")
 
         self.logging_name = config.LOGGING_NAME
         self.logging_level = config.LOGGING_LEVEL.upper()
         self.logging_http_client_enable = config.LOGGING_HTTP_CLIENT_ENABLE
         self.logging_console_enable = config.LOGGING_CONSOLE_ENABLE
         self.logging_formatter = config.LOGGING_FORMATTER
-        self.logging_file_enable = str_to_bool(config.LOGGING_FILE_ENABLE)
+        self.logging_file_enable = config.LOGGING_FILE_ENABLE
         self.logging_file_path = config.LOGGING_FILE_PATH
-        self.logging_otlp_enable = str_to_bool(config.LOGGING_OTLP_ENABLE)
+        self.logging_otlp_enable = config.LOGGING_OTLP_ENABLE
         self.logging_otlp_endpoint = config.LOGGING_OTLP_ENDPOINT
         self.logging_otlp_insecure = config.LOGGING_OTLP_INSECURE
-        self.logging_otlp_use_credentials = str_to_bool(config.LOGGING_OTLP_USE_CREDENTIALS)
+        self.logging_otlp_use_credentials = config.LOGGING_OTLP_USE_CREDENTIALS
         self.use_ssl_certificate = False
         self.ssl_certificate_path = None
         self.token = config.LOGGING_TOKEN
-        self.slack_notifications_enable = str_to_bool(config.LOGGING_SLACK_ENABLE)
+        self.slack_notifications_enable = config.LOGGING_SLACK_ENABLE
         self.environment = config.ENVIRONMENT
         self._logger = self.initialize_logger()
 
     def initialize_logger(self):
         # Create a logger
-        logger = logging.getLogger(self.logging_name if self.logging_name else __name__)
+        logger = logging.getLogger(self.logging_name or __name__)
         logger.setLevel(self.logging_level)
 
         # Read logs from http connections
@@ -110,5 +111,5 @@ class LoggerManager(BaseLoggerManager):
 
         return logger
 
-    def get_logger(self) -> logging.Logger:
+    def get_logger(self) -> Logger:
         return self._logger

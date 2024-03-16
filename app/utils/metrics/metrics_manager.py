@@ -1,3 +1,4 @@
+import os
 from typing import Union
 from pydantic import ValidationError
 from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
@@ -7,37 +8,38 @@ from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
 from opentelemetry.sdk.resources import Resource, SERVICE_NAME
 
 from app.schemas.metrics_manager import MetricsConfigData
-from app.utils.str_to_bool import str_to_bool
+from app.utils.custom_exceptions import ConfigValidationError
 from app.utils.check_otlp_credentials import (
     CertificateCredentialStrategy,
     TokenCredentialStrategy,
     CredentialStrategy
 )
+from app.utils.str_to_bool import str_to_bool
 
 
 class MetricsManager:
     def __init__(self):
-        try:
-            config = MetricsConfigData()
-        except ValidationError as e:
-            raise SystemExit(e)
-
-        self.metrics_enabled = str_to_bool(config.METRICS_ENABLE)
+        self.metrics_enabled = str_to_bool(os.getenv("METRICS_ENABLE", "False"))
 
         if self.metrics_enabled:
-            self.metrics_use_credentials = str_to_bool(config.METRICS_USE_CREDENTIALS)
+            try:
+                config = MetricsConfigData()
+            except ValidationError as e:
+                raise ConfigValidationError(f"Configuration validation failed: {e}")
+
+            metrics_use_credentials = config.METRICS_USE_CREDENTIALS
             self.metrics_otlp_endpoint = config.METRICS_OTLP_ENDPOINT
-            self.metrics_otlp_insecure = str_to_bool(config.METRICS_OTLP_INSECURE)
+            self.metrics_otlp_insecure = config.METRICS_OTLP_INSECURE
             self.metrics_service_name = config.METRICS_SERVICE_NAME
             self.metrics_library_name = config.METRICS_LIBRARY_NAME
             self.metrics_library_version = config.METRICS_LIBRARY_VERSION
             self.environment = config.ENVIRONMENT
 
             credentials = None
-            if self.metrics_use_credentials:
+            if metrics_use_credentials:
                 credential_strategy: CredentialStrategy
 
-                if str_to_bool(config.METRICS_OTLP_USE_SSL_CERTIFICATE):
+                if config.METRICS_OTLP_USE_SSL_CERTIFICATE:
                     credential_strategy = CertificateCredentialStrategy(config.METRICS_SSL_CERTIFICATE_PATH)
                 else:
                     credential_strategy = TokenCredentialStrategy(config.METRICS_TOKEN)
