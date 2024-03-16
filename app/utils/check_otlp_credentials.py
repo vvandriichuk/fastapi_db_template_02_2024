@@ -28,11 +28,15 @@ class TokenCredentialStrategy(CredentialStrategy):
 
     def get_credentials(self):
         token_credentials = access_token_call_credentials(self.token)
+        ssl_credentials = None
         if self.cert_path:
             with open(self.cert_path, 'rb') as cert_file:
                 cert = cert_file.read()
             ssl_credentials = ssl_channel_credentials(cert)
+        # Always create composite credentials, but include SSL only if available
+        if ssl_credentials:
             return composite_channel_credentials(ssl_credentials, token_credentials)
         else:
-            return token_credentials
+            # If no SSL credentials, use a default (empty) SSL context to satisfy the type requirement
+            return composite_channel_credentials(ssl_channel_credentials(), token_credentials)
 
