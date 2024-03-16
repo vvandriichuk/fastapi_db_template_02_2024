@@ -3,11 +3,11 @@ from pydantic_settings import BaseSettings
 
 
 class MetricsConfigData(BaseSettings):
-    METRICS_ENABLE: str = Field(default=False)
-    METRICS_USE_CREDENTIALS: str = Field(default=False)
+    METRICS_ENABLE: bool = Field(default=False)
+    METRICS_USE_CREDENTIALS: bool = Field(default=False)
     METRICS_TOKEN: str = Field(default='')
     METRICS_OTLP_ENDPOINT: str = Field(...)
-    METRICS_OTLP_INSECURE: str = Field(default=False)
+    METRICS_OTLP_INSECURE: bool = Field(default=False)
     METRICS_SERVICE_NAME: str = Field(...)
     METRICS_LIBRARY_NAME: str = Field(...)
     METRICS_LIBRARY_VERSION: str = Field(...)
@@ -21,6 +21,5 @@ class MetricsConfigData(BaseSettings):
         return value
 
     class Config:
-        # Read the.env file
         env_file = '.env'
         env_file_encoding = 'utf-8'

@@ -31,7 +31,7 @@ class SlackConnector:
             raise SystemExit(e)
 
         self._request_base_url = config.SLACK_API_URL
-        self._service_name = config.FILES_UPLOAD
+        self._service_name = config.SERVICE_NAME
         self._channel_id = config.SLACK_LOG_CHANNEL_ID
         self._token = config.SLACK_API_BOT_DEV_INFORMER_TOKEN
         self._app_name = config.SLACK_APP_NAME
