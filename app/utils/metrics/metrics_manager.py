@@ -1,48 +1,48 @@
-from typing import Iterable, Union
-
-from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import (
-    OTLPMetricExporter,
-)
-from opentelemetry.metrics import (
-    CallbackOptions,
-    Observation,
-    get_meter_provider,
-    set_meter_provider,
-)
+import os
+from typing import Union
+from pydantic import ValidationError
+from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
+from opentelemetry.metrics import get_meter_provider, set_meter_provider
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
-from opentelemetry.sdk.resources import SERVICE_NAME, Resource
+from opentelemetry.sdk.resources import Resource, SERVICE_NAME
 
-from app.config.metrics_config import MetricsConfigData
+from app.schemas.metrics_manager import MetricsConfigData
+from app.utils.custom_exceptions import ConfigValidationError
+from app.utils.check_otlp_credentials import (
+    CertificateCredentialStrategy,
+    TokenCredentialStrategy,
+    CredentialStrategy
+)
 from app.utils.str_to_bool import str_to_bool
-
-from app.utils.check_otlp_credentials import CertificateCredentialStrategy, TokenCredentialStrategy, CredentialStrategy
 
 
 class MetricsManager:
     def __init__(self):
-        self.metrics_enabled = MetricsConfigData.METRICS_ENABLE()
-        self.metrics_use_credentials = MetricsConfigData.METRICS_USE_CREDENTIALS()
-        self.metrics_use_ssl_certificate = False
-        self.metrics_ssl_certificate_path = None
-        self.metrics_token = MetricsConfigData.METRICS_TOKEN()
-        self.metrics_otlp_endpoint = MetricsConfigData.METRICS_OTLP_ENDPOINT()
-        self.metrics_otlp_insecure = str_to_bool(MetricsConfigData.METRICS_OTLP_INSECURE())
-        self.metrics_service_name = MetricsConfigData.METRICS_SERVICE_NAME()
-        self.metrics_library_name = MetricsConfigData.METRICS_LIBRARY_NAME()
-        self.metrics_library_version = MetricsConfigData.METRICS_LIBRARY_VERSION()
-        self.environment = MetricsConfigData.ENVIRONMENT()
+        self.metrics_enabled = str_to_bool(os.getenv("METRICS_ENABLE", "False"))
 
-        if self.metrics_enabled is True:
+        if self.metrics_enabled:
+            try:
+                config = MetricsConfigData()
+            except ValidationError as e:
+                raise ConfigValidationError(f"Configuration validation failed: {e}")
+
+            metrics_use_credentials = config.METRICS_USE_CREDENTIALS
+            self.metrics_otlp_endpoint = config.METRICS_OTLP_ENDPOINT
+            self.metrics_otlp_insecure = config.METRICS_OTLP_INSECURE
+            self.metrics_service_name = config.METRICS_SERVICE_NAME
+            self.metrics_library_name = config.METRICS_LIBRARY_NAME
+            self.metrics_library_version = config.METRICS_LIBRARY_VERSION
+            self.environment = config.ENVIRONMENT
+
             credentials = None
-
-            if self.metrics_use_credentials is True:
+            if metrics_use_credentials:
                 credential_strategy: CredentialStrategy
 
-                if self.metrics_use_ssl_certificate is True:
-                    credential_strategy = CertificateCredentialStrategy(self.metrics_ssl_certificate_path)
+                if config.METRICS_OTLP_USE_SSL_CERTIFICATE:
+                    credential_strategy = CertificateCredentialStrategy(config.METRICS_SSL_CERTIFICATE_PATH)
                 else:
-                    credential_strategy = TokenCredentialStrategy(self.metrics_token)
+                    credential_strategy = TokenCredentialStrategy(config.METRICS_TOKEN)
 
                 credentials = credential_strategy.get_credentials()
 
@@ -61,25 +61,36 @@ class MetricsManager:
             )
 
             set_meter_provider(self.provider)
-        self.meter = get_meter_provider().get_meter(name=self.metrics_library_name,
-                                                    version=self.metrics_library_version)
 
-    # UpDownCounter is a synchronous Instrument which supports increments and decrements.
-    def updown_counter_add(self, name: str, value: Union[int, float], unit: str = "", description: str = ""):
-        if self.metrics_enabled is True:
-            self.meter.create_up_down_counter(name, unit, description).add(value)
+            self.meter = get_meter_provider().get_meter(
+                self.metrics_library_name,
+                version=self.metrics_library_version
+            )
 
-    # Counter is a synchronous Instrument which supports non-negative increments.
-    def counter_add(self, name: str, value: Union[int, float], unit: str = "", description: str = ""):
-        if self.metrics_enabled is True:
-            self.meter.create_counter(name, unit, description).add(value)
+            self.up_down_counter = self.meter.create_up_down_counter(
+                "UpDownCounter",
+                "",
+                ""
+            )
+            self.counter = self.meter.create_counter(
+                "Counter",
+                "",
+                ""
+            )
+            self.histogram = self.meter.create_histogram(
+                "HistogramRecord",
+                "ms",
+                "HistogramRecord finished time in milliseconds"
+            )
 
-    # Histogram is a synchronous Instrument which can be used to report arbitrary values that are likely to be statistically meaningful.
-    # It is intended for statistics such as histograms, summaries, and percentile.
-    def histogram_record(self, name: str, value: Union[int, float], unit: str = "", description: str = ""):
-        if self.metrics_enabled is True:
-            self.meter.create_histogram(name, unit, description).record(value)
+    def updown_counter_add(self, value: Union[int, float]):
+        if self.metrics_enabled:
+            self.up_down_counter.add(value)
 
-    # Gauge is a synchronous Instrument which can be used to record non-additive value(s) (e.g. the background noise level -
-    # it makes no sense to record the background noise level value from multiple rooms and sum them up) when changes occur.
-    # TODO: add gauge Observe() https://opentelemetry.io/docs/specs/otel/metrics/api/#gauge
+    def counter_add(self, value: Union[int, float]):
+        if self.metrics_enabled:
+            self.counter.add(value)
+
+    def histogram_record(self, value: Union[int, float]):
+        if self.metrics_enabled:
+            self.histogram.record(value)
