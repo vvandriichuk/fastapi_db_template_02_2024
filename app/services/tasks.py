@@ -3,10 +3,11 @@ from opentelemetry import trace
 from app.schemas.tasks import TaskSchemaAdd, TaskSchemaEdit
 from app.utils.unitofwork import IUnitOfWork
 
+tracer = trace.get_tracer(__name__)
+
 
 class TasksService:
     async def add_task(self, uow: IUnitOfWork, task: TaskSchemaAdd):
-        tracer = trace.get_tracer(__name__)
         with tracer.start_as_current_span("Service: Add Task") as span:
             tasks_dict = task.model_dump()
             async with uow:
@@ -16,7 +17,6 @@ class TasksService:
                 return task_id
 
     async def get_tasks(self, uow: IUnitOfWork):
-        tracer = trace.get_tracer(__name__)
         with tracer.start_as_current_span("Service: Get Tasks") as span:
             async with uow:
                 tasks = await uow.tasks.find_all()
@@ -24,7 +24,6 @@ class TasksService:
                 return tasks
 
     async def edit_task(self, uow: IUnitOfWork, task_id: int, task: TaskSchemaEdit):
-        tracer = trace.get_tracer(__name__)
         with tracer.start_as_current_span("Service: Edit Tasks") as span:
             tasks_dict = task.model_dump()
             async with uow:

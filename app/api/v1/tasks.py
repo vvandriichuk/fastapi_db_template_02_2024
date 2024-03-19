@@ -15,6 +15,7 @@ router = APIRouter(
 )
 
 logger = logger_manager.get_logger()
+tracer = trace.get_tracer(__name__)
 
 
 @router.get("")
@@ -22,7 +23,6 @@ async def get_tasks(
     uow: UOWDep,
     current_user: CurrentUser,
 ):
-    tracer = trace.get_tracer(__name__)
     with tracer.start_as_current_span("Get Tasks Endpoint"):
         start_time = time.time()
         tasks = await TasksService().get_tasks(uow)
@@ -43,7 +43,6 @@ async def add_task(
     uow: UOWDep,
     current_user: CurrentUser,
 ):
-    tracer = trace.get_tracer(__name__)
     with tracer.start_as_current_span("Add Tasks Endpoint"):
         task_id = await TasksService().add_task(uow, task)
         return {"task_id": task_id}
@@ -56,7 +55,6 @@ async def edit_task(
     uow: UOWDep,
     current_user: CurrentUser,
 ):
-    tracer = trace.get_tracer(__name__)
     with tracer.start_as_current_span("Edit Tasks Endpoint"):
         await TasksService().edit_task(uow, id, task)
         return {"ok": True}
