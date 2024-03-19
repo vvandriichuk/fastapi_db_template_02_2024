@@ -1,12 +1,13 @@
 from fastapi import APIRouter
 import time
 
-from opentelemetry import trace
+# from opentelemetry import trace
 
 from app.api.v1.dependencies import UOWDep, CurrentUser
 from app.schemas.tasks import TaskSchemaAdd, TaskSchemaEdit
 from app.services.tasks import TasksService
 from app.config.logger_setup import logger_manager
+from app.config.tracer_setup import trace_manager
 from app.config.metrics_setup import mm
 
 router = APIRouter(
@@ -15,7 +16,7 @@ router = APIRouter(
 )
 
 logger = logger_manager.get_logger()
-tracer = trace.get_tracer(__name__)
+tracer = trace_manager.get_tracer(__name__)
 
 
 @router.get("")

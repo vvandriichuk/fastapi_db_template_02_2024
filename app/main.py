@@ -5,12 +5,10 @@ from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
 from opentelemetry.instrumentation.sqlite3 import SQLite3Instrumentor
 
 from app.api.v1.routers import all_routers
-from app.config.tracer_setup import setup_tracing
 
 
 app = FastAPI(title="Basic Template for Fast API + DB")
 
-setup_tracing()
 FastAPIInstrumentor.instrument_app(app)
 SQLAlchemyInstrumentor().instrument()
 SQLite3Instrumentor().instrument()
