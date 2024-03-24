@@ -4,6 +4,7 @@ from sqlalchemy.orm import selectinload
 
 from app.db.db import Base
 from app.models.users import Users
+from app.utils.enums import SortOrder
 from app.utils.repository import SQLAlchemyRepository
 
 
@@ -14,7 +15,7 @@ class UsersRepository(SQLAlchemyRepository):
 
     async def find_all(
             self,
-            sort_order: str = "ASC",
+            sort_order: SortOrder = SortOrder.ASC,
             page_size: int = 10,
             page: int = 1,
             **filters: Any
@@ -26,7 +27,7 @@ class UsersRepository(SQLAlchemyRepository):
                 column = getattr(self.model, key)
                 query = query.filter(column == value)
 
-        if sort_order.upper() == "DESC":
+        if sort_order.value == "DESC":
             query = query.order_by(desc(self.model.id))
         else:
             query = query.order_by(asc(self.model.id))
