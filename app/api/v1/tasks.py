@@ -1,7 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
+from typing import Optional
 import time
-
-# from opentelemetry import trace
 
 from app.api.v1.dependencies import UOWDep, CurrentUser
 from app.schemas.tasks import TaskSchemaAdd, TaskSchemaEdit
@@ -23,10 +22,15 @@ tracer = trace_manager.get_tracer(__name__)
 async def get_tasks(
     uow: UOWDep,
     current_user: CurrentUser,
+    sort_order: str = Query("ASC", description="Sort order: ASC or DESC"),
+    page_size: int = Query(10, description="Number of tasks per page"),
+    page: int = Query(1, description="Page number"),
+    author_id: Optional[int] = Query(None, description="Filter by author's ID"),
+    assignee_id: Optional[int] = Query(None, description="Filter by assignee's ID"),
 ):
     with tracer.start_as_current_span("Get Tasks Endpoint"):
         start_time = time.time()
-        tasks = await TasksService().get_tasks(uow)
+        tasks = await TasksService().get_tasks(uow, sort_order=sort_order, page_size=page_size, page=page, author_id=author_id, assignee_id=assignee_id)
 
         mm.counter_add(22)
         mm.updown_counter_add(27)

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from opentelemetry import trace
 
 from app.schemas.tasks import TaskSchemaAdd, TaskSchemaEdit
@@ -16,10 +18,10 @@ class TasksService:
                 span.set_attribute("task_id", task_id)
                 return task_id
 
-    async def get_tasks(self, uow: IUnitOfWork):
+    async def get_tasks(self, uow: IUnitOfWork, sort_order: str = "ASC", page_size: int = 10, page: int = 1, author_id: Optional[int] = None, assignee_id: Optional[int] = None):
         with tracer.start_as_current_span("Service: Get Tasks") as span:
             async with uow:
-                tasks = await uow.tasks.find_all()
+                tasks = await uow.tasks.find_all(sort_order=sort_order, page_size=page_size, page=page, author_id=author_id, assignee_id=assignee_id)
                 span.set_attribute("tasks.count", len(tasks))
                 return tasks
 
