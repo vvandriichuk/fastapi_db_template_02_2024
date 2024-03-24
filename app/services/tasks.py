@@ -5,9 +5,11 @@ from app.config.tracer_setup import trace_manager
 
 
 class TasksService:
+    def __init__(self):
+        self.tracer = trace_manager.get_tracer(__name__)
+
     async def add_task(self, uow: IUnitOfWork, task: TaskSchemaAdd):
-        tracer = trace_manager.get_tracer(__name__)
-        with tracer.start_as_current_span("Service: Add Task") as span:
+        with self.tracer.start_as_current_span("Service: Add Task") as span:
             tasks_dict = task.model_dump()
             async with uow:
                 task_id = await uow.tasks.add_one(tasks_dict)
@@ -16,8 +18,7 @@ class TasksService:
                 return task_id
 
     async def get_tasks(self, uow: IUnitOfWork, filtering: FilteringParams):
-        tracer = trace_manager.get_tracer(__name__)
-        with tracer.start_as_current_span("Service: Get Tasks") as span:
+        with self.tracer.start_as_current_span("Service: Get Tasks") as span:
             async with uow:
                 tasks = await uow.tasks.find_all(
                     sort_order=filtering.sort_order,
@@ -28,8 +29,7 @@ class TasksService:
                 return tasks
 
     async def edit_task(self, uow: IUnitOfWork, task_id: int, task: TaskSchemaEdit):
-        tracer = trace_manager.get_tracer(__name__)
-        with tracer.start_as_current_span("Service: Edit Tasks") as span:
+        with self.tracer.start_as_current_span("Service: Edit Tasks") as span:
             tasks_dict = task.model_dump()
             async with uow:
                 await uow.tasks.edit_one(task_id, tasks_dict)

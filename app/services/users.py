@@ -5,9 +5,11 @@ from app.config.tracer_setup import trace_manager
 
 
 class UsersService:
+    def __init__(self):
+        self.tracer = trace_manager.get_tracer(__name__)
+
     async def add_user(self, uow: IUnitOfWork, user: UserSchemaAdd):
-        tracer = trace_manager.get_tracer(__name__)
-        with tracer.start_as_current_span("Service: Add User") as span:
+        with self.tracer.start_as_current_span("Service: Add User") as span:
             user_dict = user.model_dump()
             async with uow:
                 user_id = await uow.users.add_one(user_dict)
@@ -16,8 +18,7 @@ class UsersService:
                 return user_id
 
     async def get_users(self, uow: IUnitOfWork, filtering: FilteringParams):
-        tracer = trace_manager.get_tracer(__name__)
-        with tracer.start_as_current_span("Service: Get Users") as span:
+        with self.tracer.start_as_current_span("Service: Get Users") as span:
             async with uow:
                 users = await uow.users.find_all(
                     sort_order=filtering.sort_order,
