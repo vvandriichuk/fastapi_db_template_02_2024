@@ -1,5 +1,6 @@
 aiosqlite==0.20.0
 alembic==1.13.1
+bandit==1.7.8
 boto3==1.34.48
 greenlet==3.0.3
 fastapi==0.110.0
