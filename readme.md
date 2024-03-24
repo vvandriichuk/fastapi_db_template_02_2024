@@ -145,3 +145,8 @@ GET /.ds-metrics-*/_search
 }
 ```
 
+12. Bandit is a tool designed to find common security issues in Python code.
+
+```
+bandit -r ~/your_repos/project
+```
