@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Type
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import insert, select, update, desc, asc
+from sqlalchemy import insert, inspect, select, update, desc, asc
 
 from app.db.db import Base
 from app.config.tracer_setup import trace_manager
@@ -56,10 +56,14 @@ class SQLAlchemyRepository(AbstractRepository):
 
     async def find_all(self, sort_order: str = "ASC", page_size: int = 10, page: int = 1, **filters: Any) -> List[Dict]:
         with self.tracer.start_as_current_span("UsersRepository: find_all"):
+            valid_attributes = {c.key for c in inspect(self.model).mapper.column_attrs}
+
+            valid_filters = {key: value for key, value in filters.items() if key in valid_attributes}
+
             query = select(self.model)
 
-            for key, value in filters.items():
-                if value is not None and hasattr(self.model, key):
+            for key, value in valid_filters.items():
+                if value is not None:
                     column = getattr(self.model, key)
                     query = query.filter(column == value)
 
