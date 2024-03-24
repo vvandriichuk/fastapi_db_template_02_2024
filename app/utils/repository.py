@@ -6,6 +6,7 @@ from sqlalchemy import insert, inspect, select, update, desc, asc
 
 from app.db.db import Base
 from app.config.tracer_setup import trace_manager
+from app.utils.enums import SortOrder
 
 
 class AbstractRepository(ABC):
@@ -23,7 +24,7 @@ class AbstractRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def find_all(self, sort_order: str = "ASC", page_size: int = 10, page: int = 1, **filters: Any) -> List[Dict]:
+    async def find_all(self, sort_order: SortOrder = SortOrder.ASC, page_size: int = 10, page: int = 1, **filters: Any) -> List[Dict]:
         raise NotImplementedError
 
     @abstractmethod
@@ -54,7 +55,7 @@ class SQLAlchemyRepository(AbstractRepository):
             res = await self.session.execute(stmt)
             return res.scalar_one()
 
-    async def find_all(self, sort_order: str = "ASC", page_size: int = 10, page: int = 1, **filters: Any) -> List[Dict]:
+    async def find_all(self, sort_order: SortOrder = SortOrder.ASC, page_size: int = 10, page: int = 1, **filters: Any) -> List[Dict]:
         with self.tracer.start_as_current_span("UsersRepository: find_all"):
             valid_attributes = {c.key for c in inspect(self.model).mapper.column_attrs}
 
@@ -67,7 +68,7 @@ class SQLAlchemyRepository(AbstractRepository):
                     column = getattr(self.model, key)
                     query = query.filter(column == value)
 
-            if sort_order.upper() == "DESC":
+            if sort_order.value == "DESC":
                 query = query.order_by(desc(self.model.id))
             else:
                 query = query.order_by(asc(self.model.id))
