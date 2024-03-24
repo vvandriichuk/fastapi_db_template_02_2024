@@ -1,13 +1,12 @@
-from opentelemetry import trace
-
+from app.schemas.filters import FilteringParams
 from app.schemas.users import UserSchemaAdd
 from app.utils.unitofwork import IUnitOfWork
-
-tracer = trace.get_tracer(__name__)
+from app.config.tracer_setup import trace_manager
 
 
 class UsersService:
     async def add_user(self, uow: IUnitOfWork, user: UserSchemaAdd):
+        tracer = trace_manager.get_tracer(__name__)
         with tracer.start_as_current_span("Service: Add User") as span:
             user_dict = user.model_dump()
             async with uow:
@@ -16,9 +15,14 @@ class UsersService:
                 span.set_attribute("user_id", user_id)
                 return user_id
 
-    async def get_users(self, uow: IUnitOfWork):
+    async def get_users(self, uow: IUnitOfWork, filtering: FilteringParams):
+        tracer = trace_manager.get_tracer(__name__)
         with tracer.start_as_current_span("Service: Get Users") as span:
             async with uow:
-                users = await uow.users.find_all()
+                users = await uow.users.find_all(
+                    sort_order=filtering.sort_order,
+                    page_size=filtering.page_size,
+                    page=filtering.page
+                )
                 span.set_attribute("users.count", len(users))
                 return users

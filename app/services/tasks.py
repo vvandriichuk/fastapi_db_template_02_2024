@@ -1,15 +1,12 @@
-from typing import Optional
-
-from opentelemetry import trace
-
+from app.schemas.filters import FilteringParams
 from app.schemas.tasks import TaskSchemaAdd, TaskSchemaEdit
 from app.utils.unitofwork import IUnitOfWork
-
-tracer = trace.get_tracer(__name__)
+from app.config.tracer_setup import trace_manager
 
 
 class TasksService:
     async def add_task(self, uow: IUnitOfWork, task: TaskSchemaAdd):
+        tracer = trace_manager.get_tracer(__name__)
         with tracer.start_as_current_span("Service: Add Task") as span:
             tasks_dict = task.model_dump()
             async with uow:
@@ -18,14 +15,20 @@ class TasksService:
                 span.set_attribute("task_id", task_id)
                 return task_id
 
-    async def get_tasks(self, uow: IUnitOfWork, sort_order: str = "ASC", page_size: int = 10, page: int = 1, author_id: Optional[int] = None, assignee_id: Optional[int] = None):
+    async def get_tasks(self, uow: IUnitOfWork, filtering: FilteringParams):
+        tracer = trace_manager.get_tracer(__name__)
         with tracer.start_as_current_span("Service: Get Tasks") as span:
             async with uow:
-                tasks = await uow.tasks.find_all(sort_order=sort_order, page_size=page_size, page=page, author_id=author_id, assignee_id=assignee_id)
+                tasks = await uow.tasks.find_all(
+                    sort_order=filtering.sort_order,
+                    page_size=filtering.page_size,
+                    page=filtering.page
+                )
                 span.set_attribute("tasks.count", len(tasks))
                 return tasks
 
     async def edit_task(self, uow: IUnitOfWork, task_id: int, task: TaskSchemaEdit):
+        tracer = trace_manager.get_tracer(__name__)
         with tracer.start_as_current_span("Service: Edit Tasks") as span:
             tasks_dict = task.model_dump()
             async with uow:
