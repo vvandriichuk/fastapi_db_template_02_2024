@@ -53,8 +53,10 @@ async def log_memory_objects():
 async def lifespan(app: FastAPI):
     task = asyncio.create_task(log_memory_objects())
     yield
-    task.cancel()
+    task.cancel()  # Signal the task to cancel
     try:
         await task
     except asyncio.CancelledError:
         logger.info("Memory logging task was cancelled")
+    except Exception as e:
+        logger.error(f"An error occurred while cancelling the task: {str(e)}")
