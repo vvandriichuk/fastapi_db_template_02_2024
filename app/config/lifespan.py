@@ -41,7 +41,7 @@ async def log_memory_objects():
 
         # Logging the total memory usage to both logger and metrics
         logger.info(f"Total memory usage: {total_memory_usage:.1f} KiB")
-        log_metrics(total_memory_usage)  # Send total memory usage to your metrics
+        log_metrics(total_memory_usage)
 
         # Clear the linecache to prevent memory buildup
         linecache.clearcache()
