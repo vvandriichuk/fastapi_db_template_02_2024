@@ -36,7 +36,8 @@ async def log_memory_objects():
     while True:
         snapshot = tracemalloc.take_snapshot()
         top_lines = display_top(snapshot)
-        total_memory_usage = sum(stat.size for stat in snapshot.statistics('traceback')) / 1024  # size in KiB
+        statistics = snapshot.statistics('traceback')
+        total_memory_usage = sum(stat.size for stat in statistics) / 1024 if statistics else 0  # size in KiB
         for line in top_lines:
             logger.info(line)
 
