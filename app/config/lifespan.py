@@ -1,3 +1,4 @@
+import os
 import asyncio
 from typing import List
 import tracemalloc
@@ -7,6 +8,10 @@ from contextlib import asynccontextmanager
 
 from app.config.logger_setup import logger_manager
 from app.config.metrics_setup import mm
+
+interval = int(os.getenv("LOG_INTERVAL", "60"))
+limit = int(os.getenv("LOG_LIMIT", "10"))
+key_type = os.getenv("LOG_KEY_TYPE", "lineno")
 
 logger = logger_manager.get_logger()
 
@@ -32,10 +37,10 @@ def display_top(snapshot: tracemalloc.Snapshot, key_type: str = 'lineno', limit:
     return lines
 
 
-async def log_memory_objects():
+async def log_memory_objects(interval: int = 60, limit: int = 10, key_type: str = 'lineno'):
     while True:
         snapshot = tracemalloc.take_snapshot()
-        top_lines = display_top(snapshot)
+        top_lines = display_top(snapshot, key_type=key_type, limit=limit)
         statistics = snapshot.statistics('traceback')
         total_memory_usage = sum(stat.size for stat in statistics) / 1024 if statistics else 0  # size in KiB
         for line in top_lines:
@@ -48,17 +53,18 @@ async def log_memory_objects():
         # Clear the linecache to prevent memory buildup
         linecache.clearcache()
         logger.info("Linecache cleared to free memory.")
-        await asyncio.sleep(60)  # Pause execution for 60 seconds
+        await asyncio.sleep(interval)  # Pause execution for 60 seconds
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    task = asyncio.create_task(log_memory_objects())
+    task = asyncio.create_task(log_memory_objects(interval=interval, limit=limit, key_type=key_type))
     yield
-    task.cancel()  # Signal the task to cancel
+    task.cancel()
     try:
         await task
     except asyncio.CancelledError:
         logger.info("Memory logging task was cancelled")
     except Exception as e:
         logger.error(f"An error occurred while cancelling the task: {str(e)}")
+

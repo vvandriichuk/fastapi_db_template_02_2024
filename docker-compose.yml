@@ -44,6 +44,9 @@ services:
       - METRICS_LIBRARY_NAME=${METRICS_LIBRARY_NAME}
       - METRICS_LIBRARY_VERSION=${METRICS_LIBRARY_VERSION}
       - ENVIRONMENT=${ENVIRONMENT}
+      - LOG_INTERVAL=${LOG_INTERVAL}
+      - LOG_LIMIT=${LOG_LIMIT}
+      - LOG_KEY_TYPE=${LOG_KEY_TYPE}
     volumes:
       - ./logs:/app/logs
     networks:
