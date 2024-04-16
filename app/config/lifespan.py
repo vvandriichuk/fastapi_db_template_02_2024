@@ -1,4 +1,5 @@
 import asyncio
+from typing import List
 import tracemalloc
 import linecache
 from fastapi import FastAPI
@@ -16,14 +17,14 @@ def log_metrics(memory_usage):
     mm.histogram_record(memory_usage)
 
 
-def display_top(snapshot, key_type='lineno', limit=10):
+def display_top(snapshot: tracemalloc.Snapshot, key_type: str = 'lineno', limit: int = 10) -> List[str]:
     snapshot = snapshot.filter_traces((
         tracemalloc.Filter(False, "<frozen importlib._bootstrap>"),
         tracemalloc.Filter(False, "<unknown>"),
     ))
     top_stats = snapshot.statistics(key_type)
 
-    lines = []
+    lines: List[str] = []
     for index, stat in enumerate(top_stats[:limit], 1):
         frame = stat.traceback[0]
         line = linecache.getline(frame.filename, frame.lineno).strip()
