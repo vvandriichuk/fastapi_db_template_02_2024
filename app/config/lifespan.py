@@ -1,7 +1,7 @@
 import asyncio
 import tracemalloc
 import linecache
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
 from app.config.logger_setup import logger_manager
