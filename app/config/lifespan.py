@@ -46,7 +46,7 @@ async def log_memory_objects():
         # Clear the linecache to prevent memory buildup
         linecache.clearcache()
         logger.info("Linecache cleared to free memory.")
-        await asyncio.sleep(60)  # every 1 minutes
+        await asyncio.sleep(60)  # Pause execution for 60 seconds
 
 
 @asynccontextmanager
