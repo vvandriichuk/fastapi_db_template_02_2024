@@ -1,18 +1,18 @@
 import uvicorn
+
 from fastapi import FastAPI, HTTPException
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
 from opentelemetry.instrumentation.sqlite3 import SQLite3Instrumentor
 
 from app.api.v1.routers import all_routers
+from app.config.lifespan import lifespan
 
-
-app = FastAPI(title="Basic Template for Fast API + DB")
+app = FastAPI(title="Basic Template for Fast API + DB", lifespan=lifespan)
 
 FastAPIInstrumentor.instrument_app(app)
 SQLAlchemyInstrumentor().instrument()
 SQLite3Instrumentor().instrument()
-
 
 for router in all_routers:
     app.include_router(router)

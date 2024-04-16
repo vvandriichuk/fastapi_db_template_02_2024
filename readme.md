@@ -8,6 +8,10 @@ This my current vision of the good FastAPI structure.
 
 Short description of this structure and changes:
 
+v.2.6.0 (from 16.04.2024) - Memory Leak Detector:
+-
+-  Added Memory Leak Detector
+
 v.2.5.1 (from 15.03.2024) - AI Assistent for Code Review:
 -
 -  Added AI Assistent for Code Review
